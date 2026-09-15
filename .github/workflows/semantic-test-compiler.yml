@@ -1,0 +1,64 @@
+name: PureCore Semantic Test Compiler
+
+on:
+  push:
+    paths:
+      - "build.zig"
+      - "src/**"
+      - ".github/workflows/semantic-test-compiler.yml"
+  pull_request:
+    paths:
+      - "build.zig"
+      - "src/**"
+      - ".github/workflows/semantic-test-compiler.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  compiler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2.2.1
+        with:
+          version: 0.16.0
+      - name: Format check
+        run: zig fmt --check build.zig src
+      - name: Compiler tests
+        run: zig build test
+      - name: Generate canonical JSON
+        run: zig build run > generated-tests.json
+      - name: Validate generated JSON
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          document = json.loads(Path("generated-tests.json").read_text())
+          assert document["schema"] == "pcore.test.bundle.v1"
+          schemas = {entry["schema"] for entry in document["tests"]}
+          assert schemas == {
+              "pcore.test.unit.v1",
+              "pcore.test.load.v1",
+              "pcore.test.stress.v1",
+              "pcore.test.chaos.v1",
+              "pcore.test.security.v1",
+          }
+          for entry in document["tests"]:
+              assert entry["kind"] in {"unit", "load", "stress", "chaos", "security"}
+              assert entry["name"]
+              assert entry["subject"]
+              assert entry["input"]
+              assert entry["invariants"]
+          PY
+      - name: Upload generated contract
+        uses: actions/upload-artifact@v4
+        with:
+          name: purecore-canonical-test-json
+          path: generated-tests.json
