@@ -3,8 +3,8 @@ suite: DynamicActionQuality
 agent: ConfiguredDataAgent
 intent: ConfiguredDynamicDataIntent
 valid_values: record-alpha,record-beta,record-gamma,record-delta,record-epsilon
-input_types: string,integer,boolean,bytes,object,array,null
-output_types: string,integer,boolean,bytes,object,array,null
+input_types: Record[],string,integer,boolean,bytes,object,array,null
+output_types: ShapeReport,AggregateReport,string,integer,boolean,bytes,object,array,null
 load_repetitions: 8
 load_max_events: 256
 stress_workers: 4
