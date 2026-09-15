@@ -337,6 +337,7 @@ fn appendTest(output: *Buffer, test_case: Case, config: YamlConfig) void {
 }
 
 pub fn compile(comptime declaration_source: []const u8, comptime yaml_source: []const u8) []const u8 {
+    @setEvalBranchQuota(100_000);
     const declaration = parseDeclaration(declaration_source);
     const config = parseYaml(yaml_source);
     validate(declaration, config);
