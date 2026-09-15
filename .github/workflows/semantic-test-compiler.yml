@@ -34,7 +34,7 @@ jobs:
       - name: Compiler tests
         run: zig build test
       - name: Generate canonical JSON
-        run: zig build run > generated-tests.json
+        run: zig build run 2> generated-tests.json
       - name: Validate generated JSON
         shell: bash
         run: |
