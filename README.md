@@ -16,7 +16,7 @@ The old product prefix and the explicit \`unit\` test kind are absent from the c
 
 The DLL does not create or falsify the tests. It only receives the generated contract. The runtime executor remains the authority for executing the Action and reporting observed results. YAML supplies data and policy; it cannot provide executable pass/fail functions.
 
-For seven input types and seven output types, the generator emits \`7 × 7 − 1 = 48\` rejection cases per Action, plus five acceptance cases. Adding a new Action requires changing its declaration and configuration, not writing a new test implementation.
+For the sample configuration, the generator emits \`8 × 9 − 1 = 71\` rejection cases per Action, plus five acceptance cases. The declared Action input and output types are part of those universes, so the valid pair is explicitly represented and excluded from the rejection matrix. Adding a new Action requires changing its declaration and configuration, not writing a new test implementation.
 
 Run locally with Zig 0.16:
 
