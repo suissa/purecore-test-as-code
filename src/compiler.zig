@@ -43,7 +43,7 @@ const YamlConfig = struct {
     security_denials: []const u8 = "",
 };
 
-const Buffer = struct {
+pub const Buffer = struct {
     bytes: [max_output]u8 = undefined,
     len: usize = 0,
 
@@ -104,7 +104,7 @@ const Buffer = struct {
         first.* = false;
     }
 
-    fn slice(self: *const Buffer) []const u8 {
+    pub fn slice(self: *const Buffer) []const u8 {
         return self.bytes[0..self.len];
     }
 };
@@ -336,7 +336,7 @@ fn appendTest(output: *Buffer, test_case: Case, config: YamlConfig) void {
     output.raw("}");
 }
 
-pub fn compile(comptime declaration_source: []const u8, comptime yaml_source: []const u8) []const u8 {
+pub fn compile(comptime declaration_source: []const u8, comptime yaml_source: []const u8) Buffer {
     @setEvalBranchQuota(100_000);
     const declaration = parseDeclaration(declaration_source);
     const config = parseYaml(yaml_source);
@@ -360,5 +360,5 @@ pub fn compile(comptime declaration_source: []const u8, comptime yaml_source: []
         appendTest(&output, test_case, config);
     }
     output.raw("]}");
-    return output.slice();
+    return output;
 }
