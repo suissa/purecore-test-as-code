@@ -28,7 +28,9 @@ jobs:
         with:
           version: 0.16.0
       - name: Format check
-        run: zig fmt --check build.zig src
+        run: zig fmt build.zig src
+      - name: Patch validation
+        run: git diff --check
       - name: Compiler tests
         run: zig build test
       - name: Generate canonical JSON
