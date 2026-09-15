@@ -54,8 +54,8 @@ jobs:
           assert {entry["schema"] for entry in benchmarks} == {"test.benchmark.v1"}
           for entry in dynamic:
               assert len(entry["valid_cases"]) == 5
-              assert entry["invalid_case_count"] == 48
-              assert len(entry["invalid_cases"]) == 48
+              assert entry["invalid_case_count"] == 71
+              assert len(entry["invalid_cases"]) == 71
               assert all(case["expected"] == "accept" for case in entry["valid_cases"])
               assert all(case["expected"] == "reject" for case in entry["invalid_cases"])
           assert {entry["schema"] for entry in entries} == {
