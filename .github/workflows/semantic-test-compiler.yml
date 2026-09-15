@@ -1,4 +1,4 @@
-name: PureCore Semantic Test Compiler
+name: Semantic Test Compiler
 
 on:
   push:
@@ -44,25 +44,56 @@ jobs:
           import json
           from pathlib import Path
 
-          document = json.loads(Path("generated-tests.json").read_text())
-          assert document["schema"] == "pcore.test.bundle.v1"
-          schemas = {entry["schema"] for entry in document["tests"]}
-          assert schemas == {
-              "pcore.test.unit.v1",
-              "pcore.test.load.v1",
-              "pcore.test.stress.v1",
-              "pcore.test.chaos.v1",
-              "pcore.test.security.v1",
+          semantic_types = {
+              "ObservedRecordBatch",
+              "SchemaObservation",
+              "RelationalJoinInput",
+              "ProjectionMaterializationRequest",
+              "MaterializationPlan",
+              "ValueShapeObservation",
+              "AggregatedRecordReport",
+              "ProjectionMaterializationReceipt",
+              "IdempotencyReceipt",
+              "BehaviorErrorReceipt",
           }
-          for entry in document["tests"]:
-              assert entry["kind"] in {"unit", "load", "stress", "chaos", "security"}
-              assert entry["name"]
-              assert entry["subject"]
-              assert entry["input"]
-              assert entry["invariants"]
+          primitive_names = {"string", "integer", "boolean", "bytes", "object", "array", "null"}
+
+          document = json.loads(Path("generated-tests.json").read_text())
+          assert document["schema"] == "test.bundle.v1"
+          assert document["type_system"] == "semantic-atomicbehavior"
+          declared = {entry["name"] for entry in document["semantic_types"]}
+          assert declared == semantic_types
+
+          entries = document["tests"]
+          dynamic = [entry for entry in entries if entry["kind"] == "dynamic-contract"]
+          benchmarks = [entry for entry in entries if entry["kind"] == "benchmark"]
+          assert len(dynamic) == len(benchmarks) == 2
+          assert {entry["schema"] for entry in dynamic} == {"test.dynamic.v1"}
+          assert {entry["schema"] for entry in benchmarks} == {"test.benchmark.v1"}
+
+          for entry in dynamic:
+              assert len(entry["valid_cases"]) == 5
+              assert entry["invalid_case_count"] == 99
+              assert len(entry["invalid_cases"]) == 99
+              assert all(case["expected"] == "accept" for case in entry["valid_cases"])
+              assert all(case["expected"] == "reject" for case in entry["invalid_cases"])
+              assert entry["input_type"] in semantic_types
+              assert entry["output_type"] in semantic_types
+              assert entry["input_type"] not in primitive_names
+              assert entry["output_type"] not in primitive_names
+
+          assert {entry["schema"] for entry in entries} == {
+              "test.dynamic.v1",
+              "test.load.v1",
+              "test.stress.v1",
+              "test.chaos.v1",
+              "test.security.v1",
+              "test.benchmark.v1",
+          }
+          assert all(entry["kind"] != "unit" for entry in entries)
           PY
       - name: Upload generated contract
         uses: actions/upload-artifact@v4
         with:
-          name: purecore-canonical-test-json
+          name: canonical-test-json
           path: generated-tests.json

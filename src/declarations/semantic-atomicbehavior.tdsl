@@ -1,0 +1,24 @@
+# Semantic AtomicBehavior Type and Action DSL.
+type_system semantic-atomicbehavior
+suite DynamicActionQuality
+agent ConfiguredDataAgent
+intent ConfiguredDynamicDataIntent
+
+type ObservedRecordBatch category=observation meaning=bounded-local-record-collection
+type SchemaObservation category=observation meaning=observed-semantic-shape
+type RelationalJoinInput category=composition meaning=explicitly-related-record-sources
+type ProjectionMaterializationRequest category=materialization meaning=local-projection-intent
+type MaterializationPlan category=transformation meaning=declarative-local-materialization
+type ValueShapeObservation category=observation meaning=observed-value-shape-report
+type AggregatedRecordReport category=transformation meaning=deterministic-record-aggregation
+type ProjectionMaterializationReceipt category=materialization meaning=local-materialization-evidence
+type IdempotencyReceipt category=assurance meaning=stable-replay-settlement
+type BehaviorErrorReceipt category=assurance meaning=runtime-owned-failure-observation
+
+action Data.InspectValueShape input=ObservedRecordBatch output=ValueShapeObservation
+action Data.AggregateRecords input=ObservedRecordBatch output=AggregatedRecordReport
+
+load Data.InspectValueShape invariants=bounded-local-input,runtime-owned-terminal,idempotent
+stress Data.AggregateRecords invariants=bounded-local-input,bounded-memory,fair-scheduling
+chaos Data.InspectValueShape invariants=restart-safe,resume-safe,replay-stable
+security Data.AggregateRecords invariants=no-network,no-arbitrary-code,no-source-mutation,no-direct-terminal

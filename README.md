@@ -1,24 +1,24 @@
-<img width="1448" height="1086" alt="1000449193" src="https://github.com/user-attachments/assets/50a581d0-1ca0-474f-b64a-0f1fcac3954c" />
+# Semantic Test as Code
 
+Semantic test DSL and Zig 0.16 comptime compiler for Actions.
 
+The public contract uses Semantic AtomicBehavior Types. It does not use a product prefix, an explicit \`unit\` kind, primitive type names, or language-specific containers.
 
-PureCore semantic test DSL and comptime compiler.
+Inputs:
 
-The repository separates three concerns:
+- \`src/declarations/semantic-atomicbehavior.tdsl\`: declares the semantic type system, each Action's \`input -> output\` signature, and scenario invariants.
+- \`src/config/tests.yaml\`: supplies semantic fixtures, declared type universes, limits, capabilities, and fault plans.
+- \`src/compiler.zig\`: reads both at comptime and emits deterministic canonical JSON.
 
-1. src/declarations/purecore.pct describes semantic test scenarios.
-2. src/config/purecore.yaml supplies values, limits, capabilities and fault plans.
-3. src/compiler.zig validates both inputs at comptime and emits deterministic canonical JSON.
+Generated contracts:
 
-The five test types intentionally have different schemas:
+- \`test.dynamic.v1\`: five valid semantic fixtures plus the complete invalid input/output Semantic AtomicBehavior Type matrix for every Action.
+- \`test.load.v1\`, \`test.stress.v1\`, \`test.chaos.v1\`, \`test.security.v1\`: different schemas for operational scenarios.
+- \`test.benchmark.v1\`: emitted automatically for every Action as the standard execution benchmark.
 
-- pcore.test.unit.v1: single deterministic behavior, oracle and event bound.
-- pcore.test.load.v1: repetitions, event bound and idempotent settlement.
-- pcore.test.stress.v1: workers, duration, failure budget and scheduling policy.
-- pcore.test.chaos.v1: fault set, recovery strategy and replay requirement.
-- pcore.test.security.v1: allowed capabilities, explicit denials, secret handling and terminal authority.
+The compiler rejects undeclared or primitive type names. The DLL does not create or falsify tests: it receives the generated contract. The runtime executor invokes the Action and remains the authority for observed results. YAML supplies data and policy; it cannot provide executable pass/fail functions.
 
-The compiler rejects missing test types, identity mismatches, unknown DSL/YAML keys and invalid numeric limits during compilation. The YAML never supplies executable test code or a pass/fail assertion. It supplies only scenario data; the runtime test executor remains the authority for observed results.
+The sample declares ten semantic types in both universes, producing \`10 × 10 − 1 = 99\` rejection cases per Action, plus five acceptance cases. Adding an Action requires its semantic signature and configuration, not a new test implementation.
 
 Run locally with Zig 0.16:
 
@@ -28,4 +28,4 @@ zig build test
 zig build run 2> generated-tests.json
 ~~~
 
-CI validates formatting, executes the comptime compiler tests, validates the generated JSON against the canonical type set and uploads the generated contract as an artifact.
+CI compiles the generator, validates semantic type declarations, checks generated JSON cardinalities, and uploads the generated contract.
