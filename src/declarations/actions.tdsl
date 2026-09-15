@@ -1,0 +1,13 @@
+# Semantic Action DSL.
+# The action signature is read here; YAML only supplies data and policy.
+suite DynamicActionQuality
+agent ConfiguredDataAgent
+intent ConfiguredDynamicDataIntent
+
+action Data.InspectValueShape input=Record[] output=ShapeReport
+action Data.AggregateRecords input=Record[] output=AggregateReport
+
+load Data.InspectValueShape invariants=bounded-local-input,runtime-owned-terminal,idempotent
+stress Data.AggregateRecords invariants=bounded-local-input,bounded-memory,fair-scheduling
+chaos Data.InspectValueShape invariants=restart-safe,resume-safe,replay-stable
+security Data.AggregateRecords invariants=no-network,no-arbitrary-code,no-source-mutation,no-direct-terminal

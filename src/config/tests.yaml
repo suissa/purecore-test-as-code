@@ -1,0 +1,20 @@
+# Declarative values and policies. No executable assertions live here.
+suite: DynamicActionQuality
+agent: ConfiguredDataAgent
+intent: ConfiguredDynamicDataIntent
+valid_values: record-alpha,record-beta,record-gamma,record-delta,record-epsilon
+input_types: Record[],string,integer,boolean,bytes,object,array,null
+output_types: ShapeReport,AggregateReport,string,integer,boolean,bytes,object,array,null
+load_repetitions: 8
+load_max_events: 256
+stress_workers: 4
+stress_duration_ms: 1000
+stress_max_failures: 0
+chaos_faults: interrupt,restart,resume,replay
+chaos_recovery: resume_then_replay
+security_capabilities: local_ram,local_disk,event_store
+security_denials: network,arbitrary_code,source_mutation,direct_terminal_event
+benchmark_warmup: 3
+benchmark_iterations: 20
+benchmark_concurrency: 1
+benchmark_p95_max_ms: 250
