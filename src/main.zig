@@ -1,10 +1,11 @@
 const std = @import("std");
 const compiler = @import("compiler.zig");
 
-pub const generated_json = compiler.compile(
+pub const generated = compiler.compile(
     @embedFile("declarations/purecore.pct"),
     @embedFile("config/purecore.yaml"),
 );
+pub const generated_json = generated.slice();
 
 pub fn main() !void {
     try std.fs.File.stdout().writeAll(generated_json);
