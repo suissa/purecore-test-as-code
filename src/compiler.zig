@@ -352,7 +352,7 @@ pub fn compile(comptime declaration_source: []const u8, comptime yaml_source: []
     output.key("intent", config.intent);
     output.raw(",");
     output.jsonString("tests");
-    output.raw ":[";
+    output.raw(":[");
     var first = true;
     for (declaration.cases[0..declaration.case_count]) |test_case| {
         output.comma(&first);
