@@ -7,9 +7,8 @@ pub const generated = compiler.compile(
 );
 pub const generated_json = generated.slice();
 
-pub fn main() !void {
-    try std.fs.File.stdout().writeAll(generated_json);
-    try std.fs.File.stdout().writeAll("\n");
+pub fn main() void {
+    std.debug.print("{s}\\n", .{generated_json});
 }
 
 test "comptime compiler emits canonical schemas for every type" {
