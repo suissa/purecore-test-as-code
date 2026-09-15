@@ -11,7 +11,7 @@ pub fn build(b: *std.Build) void {
     });
 
     const executable = b.addExecutable(.{
-        .name = "purecore-test-compiler",
+        .name = "test-as-code-compiler",
         .root_module = module,
     });
     b.installArtifact(executable);
