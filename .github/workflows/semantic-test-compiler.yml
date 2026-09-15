@@ -5,6 +5,7 @@ on:
     paths:
       - "build.zig"
       - "src/**"
+      - "README.md"
       - ".github/workflows/semantic-test-compiler.yml"
   pull_request:
     paths:
