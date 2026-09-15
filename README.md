@@ -23,7 +23,7 @@ Run locally with Zig 0.16:
 ~~~bash
 zig fmt --check build.zig src
 zig build test
-zig build run > generated-tests.json
+zig build run 2> generated-tests.json
 ~~~
 
 CI validates formatting, executes the comptime compiler tests, validates the generated JSON against the canonical type set and uploads the generated contract as an artifact.
